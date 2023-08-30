@@ -55,7 +55,10 @@ function Update() {
       last_salary: lastSalary,
     }
     axios
-      .patch(`${process.env.REACT_APP_API_URL}/candidate`, payload)
+      .patch(
+        `${process.env.REACT_APP_API_URL}/candidate/${data?.candidate_id}`,
+        payload
+      )
       .then((res) => {
         setLoading(false)
         Swal.fire({

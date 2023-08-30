@@ -4,16 +4,27 @@ import axios from "axios"
 import Swal from "sweetalert2"
 
 import Loading from "../components/loading"
+import NotFound from "../components/notFound"
 
 function Index() {
   const navigate = useNavigate()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalData, setTotalData] = useState("")
+  const [totalPage, setTotalPage] = useState("")
+  const [currentUrl, setCurrentUrl] = useState(
+    `${process.env.REACT_APP_API_URL}/candidate`
+  )
   const [candidateList, setCandidateList] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     axios
-      .get(`${process.env.REACT_APP_API_URL}/candidate`)
+      .get(currentUrl)
       .then((res) => {
+        setCurrentPage(res?.data?.current_page)
+        setTotalData(res?.data?.total_data)
+        setTotalPage(res?.data?.total_page)
         setCandidateList(res?.data?.results)
       })
       .catch((err) => {
@@ -22,10 +33,19 @@ function Index() {
       .finally(() => {
         setLoading(false)
       })
-  }, [])
+  }, [currentUrl])
+
+  const countPage = []
+  for (let index = 1; index <= totalPage; index++) {
+    countPage.push(index)
+  }
 
   if (loading) {
     return <Loading />
+  }
+
+  if (!loading && !candidateList) {
+    return <NotFound />
   }
 
   const handleDelete = (id) => {
@@ -69,7 +89,6 @@ function Index() {
             <table className="table text-center">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Date of Birth</th>
                   <th scope="col">Gender</th>
@@ -78,11 +97,10 @@ function Index() {
                 </tr>
               </thead>
               <tbody>
-                {candidateList?.map((candidate, index) => {
+                {candidateList?.map((candidate) => {
                   return (
                     <>
                       <tr>
-                        <th scope="row">{index + 1}</th>
                         <td>{candidate?.full_name}</td>
                         <td>
                           {candidate?.pob}, {candidate?.dob?.split("T")[0]}
@@ -106,15 +124,14 @@ function Index() {
                           >
                             Update
                           </Link>
-                          <Link
-                            className="badge text-bg-danger me-1 text-decoration-none"
-                            to={`#`}
+                          <button
+                            className="badge text-bg-danger me-1 text-decoration-none border-0"
                             onClick={() => {
                               handleDelete(candidate?.candidate_id)
                             }}
                           >
                             Delete
-                          </Link>
+                          </button>
                         </td>
                       </tr>
                     </>
@@ -123,33 +140,65 @@ function Index() {
               </tbody>
             </table>
           </div>
+          <p className="text-center">
+            10 data per page <br />
+            Current page = {currentPage} <br />
+            Total data = {totalData} candidate <br />
+            Total page = {totalPage} pages <br />
+          </p>
           <nav aria-label="Page navigation example">
             <ul className="pagination justify-content-center">
-              <li className="page-item">
-                <a className="page-link" href="#">
-                  Previous
-                </a>
-              </li>
-              <li className="page-item">
-                <a className="page-link" href="#">
-                  1
-                </a>
-              </li>
-              <li className="page-item">
-                <a className="page-link" href="#">
-                  2
-                </a>
-              </li>
-              <li className="page-item">
-                <a className="page-link" href="#">
-                  3
-                </a>
-              </li>
-              <li className="page-item">
-                <a className="page-link" href="#">
-                  Next
-                </a>
-              </li>
+              {currentPage != 1 && (
+                <li className="page-item">
+                  <a
+                    className="page-link"
+                    href="#"
+                    onClick={() => {
+                      let page = currentPage - 1
+                      setCurrentUrl(
+                        `${process.env.REACT_APP_API_URL}/candidate?page=${page}`
+                      )
+                    }}
+                  >
+                    Previous
+                  </a>
+                </li>
+              )}
+              {countPage.map((page) => {
+                return (
+                  <>
+                    <li className="page-item">
+                      <a
+                        className="page-link"
+                        href="#"
+                        onClick={() => {
+                          setCurrentUrl(
+                            `${process.env.REACT_APP_API_URL}/candidate?page=${page}`
+                          )
+                        }}
+                      >
+                        {page}
+                      </a>
+                    </li>
+                  </>
+                )
+              })}
+              {currentPage != totalPage && (
+                <li className="page-item">
+                  <a
+                    className="page-link"
+                    href="#"
+                    onClick={() => {
+                      let page = currentPage + 1
+                      setCurrentUrl(
+                        `${process.env.REACT_APP_API_URL}/candidate?page=${page}`
+                      )
+                    }}
+                  >
+                    Next
+                  </a>
+                </li>
+              )}
             </ul>
           </nav>
         </div>
