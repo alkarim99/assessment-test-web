@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import Swal from "sweetalert2"
 
 import Loading from "../components/loading"
 
 function Index() {
+  const navigate = useNavigate()
   const [candidateList, setCandidateList] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -25,6 +26,35 @@ function Index() {
 
   if (loading) {
     return <Loading />
+  }
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setLoading(true)
+        axios
+          .delete(`${process.env.REACT_APP_API_URL}/candidate/${id}`)
+          .then((res) => {
+            console.log(res)
+            Swal.fire("Deleted!", "Candidate deleted successfully.", "success")
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+          .finally(() => {
+            navigate("/")
+            setLoading(false)
+          })
+      }
+    })
   }
 
   return (
@@ -78,9 +108,12 @@ function Index() {
                           </Link>
                           <Link
                             className="badge text-bg-danger me-1 text-decoration-none"
-                            to={`/delete/${candidate?.candidate_id}`}
+                            to={`#`}
+                            onClick={() => {
+                              handleDelete(candidate?.candidate_id)
+                            }}
                           >
-                            Update
+                            Delete
                           </Link>
                         </td>
                       </tr>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import Swal from "sweetalert2"
@@ -127,7 +127,7 @@ function Create() {
                 <option value="M">Male</option>
                 <option value="F">Female</option>
               </select>
-              <label for="gender">Works with selects</label>
+              <label for="gender">Select gender</label>
             </div>
             <div className="form-floating mb-3">
               <input
