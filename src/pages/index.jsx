@@ -15,6 +15,7 @@ function Index() {
     `${process.env.REACT_APP_API_URL}/candidate`
   )
   const [candidateList, setCandidateList] = useState([])
+  const [filter, setFilter] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -46,6 +47,19 @@ function Index() {
 
   if (!loading && !candidateList) {
     return <NotFound />
+  }
+
+  const handleFilter = (filter) => {
+    console.log(filter)
+    if (filter != "all") {
+      setFilter(filter)
+      setCurrentUrl(
+        `${process.env.REACT_APP_API_URL}/candidate?filter=${filter}`
+      )
+    } else {
+      setFilter("")
+      setCurrentUrl(`${process.env.REACT_APP_API_URL}/candidate`)
+    }
   }
 
   const handleDelete = (id) => {
@@ -83,9 +97,47 @@ function Index() {
         <h1 className="text-center">List of Candidate</h1>
         <div className="row">
           <div className="col my-3">
-            <Link className="btn btn-success btn-sm mb-3" to={"/create"}>
-              New Candidate
-            </Link>
+            <div className="row mb-3 justify-content-between align-items-center">
+              <div className="col-md-3">
+                <Link className="btn btn-success btn-sm" to={"/create"}>
+                  New Candidate
+                </Link>
+              </div>
+              <div className="col-md-3">
+                <label for="filter" class="form-label">
+                  Filter by year of experience (YoE)
+                </label>
+                <select
+                  className="form-select"
+                  id="filter"
+                  onChange={(e) => {
+                    handleFilter(e.target.value)
+                  }}
+                >
+                  <option value="all" selected={filter == "" ? "selected" : ""}>
+                    All
+                  </option>
+                  <option
+                    value="junior"
+                    selected={filter == "junior" ? "selected" : ""}
+                  >
+                    Junior (1-3 YoE)
+                  </option>
+                  <option
+                    value="mid"
+                    selected={filter == "mid" ? "selected" : ""}
+                  >
+                    Mid (3-5 YoE)
+                  </option>
+                  <option
+                    value="senior"
+                    selected={filter == "senior" ? "selected" : ""}
+                  >
+                    Senior ({">"}=5 YoE)
+                  </option>
+                </select>
+              </div>
+            </div>
             <table className="table text-center">
               <thead>
                 <tr>
@@ -140,67 +192,71 @@ function Index() {
               </tbody>
             </table>
           </div>
-          <p className="text-center">
-            10 data per page <br />
-            Current page = {currentPage} <br />
-            Total data = {totalData} candidate <br />
-            Total page = {totalPage} pages <br />
-          </p>
-          <nav aria-label="Page navigation example">
-            <ul className="pagination justify-content-center">
-              {currentPage != 1 && (
-                <li className="page-item">
-                  <a
-                    className="page-link"
-                    href="#"
-                    onClick={() => {
-                      let page = currentPage - 1
-                      setCurrentUrl(
-                        `${process.env.REACT_APP_API_URL}/candidate?page=${page}`
-                      )
-                    }}
-                  >
-                    Previous
-                  </a>
-                </li>
-              )}
-              {countPage.map((page) => {
-                return (
-                  <>
+          {!filter && (
+            <>
+              <p className="text-center">
+                10 data per page <br />
+                Current page = {currentPage} <br />
+                Total data = {totalData} candidate <br />
+                Total page = {totalPage} pages <br />
+              </p>
+              <nav aria-label="Page navigation example">
+                <ul className="pagination justify-content-center">
+                  {currentPage != 1 && (
                     <li className="page-item">
                       <a
                         className="page-link"
                         href="#"
                         onClick={() => {
+                          let page = currentPage - 1
                           setCurrentUrl(
                             `${process.env.REACT_APP_API_URL}/candidate?page=${page}`
                           )
                         }}
                       >
-                        {page}
+                        Previous
                       </a>
                     </li>
-                  </>
-                )
-              })}
-              {currentPage != totalPage && (
-                <li className="page-item">
-                  <a
-                    className="page-link"
-                    href="#"
-                    onClick={() => {
-                      let page = currentPage + 1
-                      setCurrentUrl(
-                        `${process.env.REACT_APP_API_URL}/candidate?page=${page}`
-                      )
-                    }}
-                  >
-                    Next
-                  </a>
-                </li>
-              )}
-            </ul>
-          </nav>
+                  )}
+                  {countPage.map((page) => {
+                    return (
+                      <>
+                        <li className="page-item">
+                          <a
+                            className="page-link"
+                            href="#"
+                            onClick={() => {
+                              setCurrentUrl(
+                                `${process.env.REACT_APP_API_URL}/candidate?page=${page}`
+                              )
+                            }}
+                          >
+                            {page}
+                          </a>
+                        </li>
+                      </>
+                    )
+                  })}
+                  {currentPage != totalPage && (
+                    <li className="page-item">
+                      <a
+                        className="page-link"
+                        href="#"
+                        onClick={() => {
+                          let page = currentPage + 1
+                          setCurrentUrl(
+                            `${process.env.REACT_APP_API_URL}/candidate?page=${page}`
+                          )
+                        }}
+                      >
+                        Next
+                      </a>
+                    </li>
+                  )}
+                </ul>
+              </nav>
+            </>
+          )}
         </div>
       </div>
     </>

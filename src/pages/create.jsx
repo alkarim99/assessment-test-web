@@ -55,12 +55,12 @@ function Create() {
   return (
     <>
       <div className="container my-5">
-        <Link className="btn btn-primary btn-sm" to={"/"}>
-          Back
-        </Link>
         <h1 className="text-center">Create New Candidate</h1>
         <div className="row justify-content-center">
           <div className="col-md-8">
+            <Link className="btn btn-primary btn-sm mb-3" to={"/"}>
+              Back
+            </Link>
             <div className="form-floating mb-3">
               <input
                 type="email"
