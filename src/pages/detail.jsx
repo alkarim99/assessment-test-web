@@ -30,6 +30,13 @@ function Detail() {
     return <Loading />
   }
 
+  const rupiah = (number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(number)
+  }
+
   return (
     <>
       <div className="container my-5">
@@ -48,7 +55,7 @@ function Detail() {
             </p>
             <p>Gender : {data?.gender == "M" ? "Male" : "Female"}</p>
             <p>Year(s) of Experience : {data?.year_exp}</p>
-            <p>Last Salary : {data?.last_salary}</p>
+            <p>Last Salary : {rupiah(data?.last_salary)}</p>
           </div>
         </div>
       </div>

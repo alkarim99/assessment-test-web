@@ -147,7 +147,7 @@ function Create() {
                 placeholder="Last Salary"
                 onChange={(e) => setLastSalary(e.target.value)}
               />
-              <label for="last_salary">Last Salary</label>
+              <label for="last_salary">Last Salary (Rp)</label>
             </div>
             <button
               type="button"
